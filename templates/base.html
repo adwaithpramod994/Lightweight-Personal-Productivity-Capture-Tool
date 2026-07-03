@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}AI Productivity{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-circle">AI</div>
+
+            <div>
+
+                <h2>Productivity</h2>
+
+                <small>Capture Assistant</small>
+
+            </div>
+
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-item {% if request.endpoint=='dashboard' %}active{% endif %}">
+
+                <i class="fa-solid fa-house"></i>
+
+                Dashboard
+
+            </a>
+
+            <a href="{{ url_for('capture') }}"
+               class="nav-item {% if request.endpoint=='capture' %}active{% endif %}">
+
+                <i class="fa-solid fa-pen"></i>
+
+                Capture
+
+            </a>
+
+            <a href="{{ url_for('task_page') }}"
+               class="nav-item {% if request.endpoint=='task_page' %}active{% endif %}">
+
+                <i class="fa-solid fa-list-check"></i>
+
+                Tasks
+
+            </a>
+
+            <a href="{{ url_for('analytics') }}"
+               class="nav-item {% if request.endpoint=='analytics' %}active{% endif %}">
+
+                <i class="fa-solid fa-chart-simple"></i>
+
+                Analytics
+
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <small>
+
+                AI Productivity Tool
+
+                <br>
+
+                Hackathon Prototype
+
+            </small>
+
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>{% block page_title %}{% endblock %}</h1>
+
+            </div>
+
+            <div class="top-actions">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Search...">
+
+                </div>
+
+                <button class="icon-btn">
+
+                    <i class="fa-regular fa-bell"></i>
+
+                </button>
+
+                <div class="avatar">
+
+                    JD
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+
+</html>
