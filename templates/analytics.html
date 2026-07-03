@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+
+{% block content %}
+
+<div class="stats">
+
+    <div class="stat">
+
+        <p>Work</p>
+
+        <h2>{{ categories.get("Work",0) }}</h2>
+
+    </div>
+
+    <div class="stat">
+
+        <p>Study</p>
+
+        <h2>{{ categories.get("Study",0) }}</h2>
+
+    </div>
+
+    <div class="stat">
+
+        <p>Personal</p>
+
+        <h2>{{ categories.get("Personal",0) }}</h2>
+
+    </div>
+
+    <div class="stat">
+
+        <p>Total Tasks</p>
+
+        <h2>{{ tasks|length }}</h2>
+
+    </div>
+
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:25px;">
+
+    <div class="card">
+
+        <h2 style="margin-bottom:25px;">
+
+            Weekly Activity
+
+        </h2>
+
+        <div style="display:flex;align-items:flex-end;height:220px;gap:18px;">
+
+            <div style="background:#2563EB;width:40px;height:120px;border-radius:8px;"></div>
+
+            <div style="background:#2563EB;width:40px;height:170px;border-radius:8px;"></div>
+
+            <div style="background:#2563EB;width:40px;height:90px;border-radius:8px;"></div>
+
+            <div style="background:#2563EB;width:40px;height:210px;border-radius:8px;"></div>
+
+            <div style="background:#2563EB;width:40px;height:150px;border-radius:8px;"></div>
+
+        </div>
+
+    </div>
+
+    <div>
+
+        <div class="card">
+
+            <h3 style="margin-bottom:18px;">
+
+                AI Insight
+
+            </h3>
+
+            <p style="color:#6B7280;line-height:28px;">
+
+                ✔ You currently have
+
+                <strong>{{ tasks|length }}</strong>
+
+                recorded tasks.
+
+                <br><br>
+
+                ✔ Study is your most active category.
+
+                <br><br>
+
+                ✔ Completing high priority work first will improve productivity.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
