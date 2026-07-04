@@ -1,6 +1,16 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+
 app = Flask(__name__)
 
+from gemini import extract_tasks
+
+from database import (
+    create_database,
+    add_task,
+    get_tasks,
+    complete_task,
+    delete_task
+)
 
 
 # Sample Data
@@ -62,6 +72,17 @@ def capture():
     return render_template("capture.html")
 
 
+@app.route("/process", methods=["POST"])
+def process():
+
+    user_input = request.form["user_input"]
+
+    result = extract_tasks(user_input)
+
+    print(result)
+
+    return redirect("/")
+
 @app.route("/tasks")
 def task_page():
     return render_template(
@@ -87,4 +108,5 @@ def analytics():
 
 
 if __name__ == "__main__":
+    create_database()   # Creates task.db and tasks table
     app.run(debug=True)
