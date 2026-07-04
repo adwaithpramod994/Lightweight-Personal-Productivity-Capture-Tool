@@ -7,51 +7,32 @@
 
 <div class="card">
 
-    <h2 style="margin-bottom:10px;">Capture Notes</h2>
+    <h2>Capture Tasks</h2>
 
-    <p style="color:#6B7280;margin-bottom:25px;">
-        Enter tasks or notes in natural language. AI will extract actionable tasks.
+    <p>
+        Enter your tasks or notes below. AI will automatically extract and organize them.
     </p>
 
-    <textarea rows="10"
-    placeholder="Example:
-Complete the AI project today.
-Prepare for Java interview tomorrow.
-Buy groceries in the evening."></textarea>
+    <form action="/process" method="POST">
 
-    <div style="margin-top:20px;display:flex;gap:15px;">
+        <textarea
+            name="user_input"
+            rows="10"
+            placeholder="Example: Tomorrow I need to complete my AI project, attend Java interview and buy groceries."
+            style="width:100%; padding:15px; border-radius:10px;"
+            required></textarea>
 
-        <button class="btn" id="analyzeBtn">
+        <br><br>
 
+        <button type="submit" class="btn">
             Analyze with AI
-
         </button>
 
-        <button class="btn" style="background:#374151;">
-
+        <button type="reset" class="btn" style="background:#374151;">
             Clear
-
         </button>
 
-    </div>
-
-</div>
-
-<div class="card" style="margin-top:25px;">
-
-    <h3 style="margin-bottom:20px;">
-        AI Output
-    </h3>
-
-    <div id="resultBox">
-
-        <p style="color:#6B7280;">
-
-            AI results will appear here after analysis.
-
-        </p>
-
-    </div>
+    </form>
 
 </div>
 
