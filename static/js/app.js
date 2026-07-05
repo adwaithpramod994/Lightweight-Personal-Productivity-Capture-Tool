@@ -1,59 +1,29 @@
-const analyzeBtn = document.getElementById("analyzeBtn");
+// =========================================
+// AI Productivity Tool
+// Minimal JavaScript
+// =========================================
 
-if (analyzeBtn) {
+// Confirm before deleting a task
+document.addEventListener("DOMContentLoaded", function () {
 
-    analyzeBtn.addEventListener("click", () => {
+    const deleteButtons = document.querySelectorAll(
+        'a[href*="/delete/"]'
+    );
 
-        document.getElementById("resultBox").innerHTML = `
+    deleteButtons.forEach(function (button) {
 
-        <div class="task">
+        button.addEventListener("click", function (event) {
 
-            <div class="task-title">
-                ✓ Complete AI Project
-            </div>
+            const confirmed = confirm(
+                "Are you sure you want to delete this task?"
+            );
 
-            <div class="task-meta">
-                Work • High Priority
-            </div>
+            if (!confirmed) {
+                event.preventDefault();
+            }
 
-        </div>
-
-        <div class="task">
-
-            <div class="task-title">
-                ✓ Prepare Java Interview
-            </div>
-
-            <div class="task-meta">
-                Study • Medium Priority
-            </div>
-
-        </div>
-
-        <div class="task">
-
-            <div class="task-title">
-                ✓ Buy Groceries
-            </div>
-
-            <div class="task-meta">
-                Personal • Low Priority
-            </div>
-
-        </div>
-
-        <br>
-
-        <p style="color:#6B7280;">
-
-        Summary:
-
-        Three tasks were detected and categorized successfully.
-
-        </p>
-
-        `;
+        });
 
     });
 
-}
+});
