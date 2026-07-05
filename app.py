@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request, redirect
 
-app = Flask(__name__)
-
 from gemini import extract_tasks
 
 from database import (
@@ -12,9 +10,7 @@ from database import (
     delete_task
 )
 
-
-
-
+app = Flask(__name__)
 
 
 @app.route("/")
@@ -23,8 +19,9 @@ def dashboard():
     tasks = get_tasks()
 
     total = len(tasks)
-    completed = len([t for t in tasks if t["status"] == "Completed"])
+    completed = len([task for task in tasks if task["status"] == "Completed"])
     pending = total - completed
+
     progress = int((completed / total) * 100) if total > 0 else 0
 
     return render_template(
@@ -45,24 +42,41 @@ def capture():
 @app.route("/process", methods=["POST"])
 def process():
 
-    # Get text entered by the user
-    user_input = request.form["user_input"]
+    user_input = request.form.get("user_input", "").strip()
 
-    # Send text to Gemini AI
+    if not user_input:
+        return redirect("/capture")
+
+    print("\n========== USER INPUT ==========")
+    print(user_input)
+
     result = extract_tasks(user_input)
 
-    # Save each extracted task into SQLite
-    for task in result["tasks"]:
+    print("\n========== GEMINI RESULT ==========")
+    print(result)
+    print("===================================\n")
 
-        add_task(
-            task["title"],
-            task["category"],
-            task["priority"],
-            task["status"]
-        )
+    tasks = result.get("tasks", [])
 
-    # Go back to dashboard
+    if tasks:
+
+        for task in tasks:
+
+            print("Adding task:", task)
+
+            add_task(
+                task.get("title", "Untitled Task"),
+                task.get("category", "Personal"),
+                task.get("priority", "Medium"),
+                task.get("status", "Pending")
+            )
+
+    else:
+        print("No tasks extracted!")
+        print("Error:", result.get("error"))
+
     return redirect("/")
+
 
 @app.route("/tasks")
 def task_page():
@@ -75,6 +89,22 @@ def task_page():
     )
 
 
+@app.route("/complete/<int:task_id>")
+def complete(task_id):
+
+    complete_task(task_id)
+
+    return redirect("/tasks")
+
+
+@app.route("/delete/<int:task_id>")
+def delete(task_id):
+
+    delete_task(task_id)
+
+    return redirect("/tasks")
+
+
 @app.route("/analytics")
 def analytics():
 
@@ -83,8 +113,10 @@ def analytics():
     categories = {}
 
     for task in tasks:
-        cat = task["category"]
-        categories[cat] = categories.get(cat, 0) + 1
+
+        category = task["category"]
+
+        categories[category] = categories.get(category, 0) + 1
 
     return render_template(
         "analytics.html",
@@ -92,6 +124,9 @@ def analytics():
         categories=categories
     )
 
+
 if __name__ == "__main__":
-    create_database()   # Creates task.db and tasks table
+
+    create_database()
+
     app.run(debug=True)
