@@ -13,49 +13,19 @@ from database import (
 )
 
 
-# Sample Data
 
 
-tasks = [
-    {
-        "title": "Complete AI Project",
-        "category": "Work",
-        "priority": "High",
-        "status": "Pending"
-    },
-    {
-        "title": "Prepare Java Interview",
-        "category": "Study",
-        "priority": "Medium",
-        "status": "Completed"
-    },
-    {
-        "title": "Revise DBMS",
-        "category": "Study",
-        "priority": "Medium",
-        "status": "Pending"
-    },
-    {
-        "title": "Buy Groceries",
-        "category": "Personal",
-        "priority": "Low",
-        "status": "Completed"
-    },
-    {
-        "title": "Read Research Paper",
-        "category": "Work",
-        "priority": "High",
-        "status": "Pending"
-    }
-]
 
 
 @app.route("/")
 def dashboard():
+
+    tasks = get_tasks()
+
     total = len(tasks)
     completed = len([t for t in tasks if t["status"] == "Completed"])
     pending = total - completed
-    progress = int((completed / total) * 100)
+    progress = int((completed / total) * 100) if total > 0 else 0
 
     return render_template(
         "dashboard.html",
@@ -75,16 +45,30 @@ def capture():
 @app.route("/process", methods=["POST"])
 def process():
 
+    # Get text entered by the user
     user_input = request.form["user_input"]
 
+    # Send text to Gemini AI
     result = extract_tasks(user_input)
 
-    print(result)
+    # Save each extracted task into SQLite
+    for task in result["tasks"]:
 
+        add_task(
+            task["title"],
+            task["category"],
+            task["priority"],
+            task["status"]
+        )
+
+    # Go back to dashboard
     return redirect("/")
 
 @app.route("/tasks")
 def task_page():
+
+    tasks = get_tasks()
+
     return render_template(
         "tasks.html",
         tasks=tasks
@@ -93,6 +77,8 @@ def task_page():
 
 @app.route("/analytics")
 def analytics():
+
+    tasks = get_tasks()
 
     categories = {}
 
@@ -105,7 +91,6 @@ def analytics():
         tasks=tasks,
         categories=categories
     )
-
 
 if __name__ == "__main__":
     create_database()   # Creates task.db and tasks table
