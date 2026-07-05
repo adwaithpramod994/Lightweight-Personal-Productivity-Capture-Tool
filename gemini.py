@@ -3,25 +3,29 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load API Key
+# Load environment variables
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
 
+if not api_key:
+    raise ValueError("GEMINI_API_KEY not found. Please add it to your .env file.")
+
 genai.configure(api_key=api_key)
 
-# Load Gemini Model
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Load Gemini model
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 
 def extract_tasks(user_input):
     """
-    Accepts user text and returns:
-    - Extracted tasks
-    - Category
-    - Priority
-    - Status
-    - Summary
+    Extracts tasks from natural language using Gemini AI.
+
+    Returns:
+    {
+        "tasks": [...],
+        "summary": "..."
+    }
     """
 
     prompt = f"""
@@ -29,52 +33,47 @@ You are an AI assistant for a Personal Productivity Tool.
 
 The user will enter tasks or notes in natural language.
 
-Your job is to:
+Your responsibilities are:
 
 1. Extract every individual task.
-2. Categorize each task into ONLY:
+2. Categorize each task into ONLY one of:
    - Study
    - Work
    - Personal
-
-3. Assign Priority:
+3. Assign a priority:
    - High
    - Medium
    - Low
-
-4. Every task should have:
+4. Every task must contain:
    - title
    - category
    - priority
    - status = Pending
+5. Generate one short summary of the entire input.
 
-5. Generate a short summary.
-
-IMPORTANT:
 Return ONLY valid JSON.
 
-Example format:
+Example:
 
 {{
     "tasks": [
         {{
-            "title": "Complete AI Project",
+            "title": "Complete AI project",
             "category": "Study",
             "priority": "High",
             "status": "Pending"
         }},
         {{
-            "title": "Buy Groceries",
-            "category": "Personal",
-            "priority": "Low",
+            "title": "Attend Java interview",
+            "category": "Work",
+            "priority": "High",
             "status": "Pending"
         }}
     ],
-    "summary": "Complete the AI project and buy groceries."
+    "summary": "Complete the AI project and attend the Java interview."
 }}
 
 User Input:
-
 {user_input}
 """
 
@@ -84,11 +83,36 @@ User Input:
 
         text = response.text.strip()
 
-        # Remove Markdown formatting if Gemini returns it
-        if text.startswith("```json"):
-            text = text.replace("```json", "").replace("```", "").strip()
+        # Remove markdown formatting if present
+        text = text.replace("```json", "").replace("```", "").strip()
 
-        return json.loads(text)
+        # Extract only the JSON object
+        start = text.find("{")
+        end = text.rfind("}")
+
+        if start == -1 or end == -1:
+            raise ValueError("Gemini did not return valid JSON.")
+
+        json_text = text[start:end + 1]
+
+        result = json.loads(json_text)
+
+        # Ensure required keys exist
+        if "tasks" not in result:
+            result["tasks"] = []
+
+        if "summary" not in result:
+            result["summary"] = ""
+
+        # Ensure every task has required fields
+        for task in result["tasks"]:
+
+            task.setdefault("title", "Untitled Task")
+            task.setdefault("category", "Personal")
+            task.setdefault("priority", "Medium")
+            task.setdefault("status", "Pending")
+
+        return result
 
     except Exception as e:
 
